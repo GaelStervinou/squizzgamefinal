@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  app-front:
+    build:
+      context: ./squizz-front
+      target: dev
+    volumes:
+      - ./squizz-front:/app
+      - /app/node_modules
+      - /app/.next
+    ports:
+      - "3000:3000"
+    networks:
+      - default
+  app-api:
+    build:
+      context: squizz-api3
+    volumes:
+      - ./squizz-api:/usr/src/app
+      - /app/node_modules
+    ports:
+      - "4001:4001"
+    depends_on:
+      - db
+    networks:
+      - default
+  db:
+    image: postgres:16-alpine3.19
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    volumes:
+        - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - default
